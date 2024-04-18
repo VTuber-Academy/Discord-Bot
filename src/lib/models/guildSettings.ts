@@ -10,7 +10,7 @@ interface GuildSettings extends Document {
 		roleMasters: string[];
 		botMaster: string[];
 	};
-	version: number;
+	version: string;
 }
 
 // Define the schema for the model
