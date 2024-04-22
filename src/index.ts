@@ -16,13 +16,10 @@ colorette.createColors({ useColor: true });
 
 // Initialize the client
 const client = new SapphireClient({
-	defaultPrefix: '!',
-	caseInsensitiveCommands: true,
 	logger: {
 		level: LogLevel.Debug
 	},
-	intents: [GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildMessages, GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent],
-	loadMessageCommandListeners: true
+	intents: [GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildMessages, GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent]
 });
 
 const main = async () => {
