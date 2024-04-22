@@ -1,4 +1,4 @@
-import levelDatabase from './levelDataBase';
+import levelDatabase from '../models/levelDataBase';
 
 class LevelManager {
 	async addXP(amount: number, toUserId: string) {

@@ -1,6 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener } from '@sapphire/framework';
-import levelDatabase from '../lib/levelDataBase';
+import levelDatabase from '../../lib/models/levelDataBase';
 import { EmbedBuilder, Interaction } from 'discord.js';
 
 @ApplyOptions<Listener.Options>({

@@ -1,8 +1,8 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener } from '@sapphire/framework';
 import { EmbedBuilder, type VoiceState } from 'discord.js';
-import levelManager from '../lib/levelManager';
-import config from '../config.json';
+import levelManager from '../../lib/managers/levelManager';
+import { levels } from '../../../config.json';
 
 const trackerMap = new Map<string, { realMinutes: number; activeMinutes: number; intervalId: NodeJS.Timeout }>();
 
@@ -12,7 +12,7 @@ const trackerMap = new Map<string, { realMinutes: number; activeMinutes: number;
 })
 export class UserEvent extends Listener {
 	public override async run(oldState: VoiceState, newState: VoiceState) {
-		if (newState.channelId === config.afkVC) {
+		if (newState.channelId === levels.afkVC) {
 			if (!newState.member) return;
 			await newState.member.voice.disconnect();
 

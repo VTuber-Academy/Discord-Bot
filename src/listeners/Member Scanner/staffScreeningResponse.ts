@@ -1,7 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener } from '@sapphire/framework';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Interaction, MessageActionRowComponentBuilder } from 'discord.js';
-import config from '../../config.json';
+import { scanner } from '../../../config.json';
 
 @ApplyOptions<Listener.Options>({
 	event: Events.InteractionCreate,
@@ -38,7 +38,7 @@ export class UserEvent extends Listener {
 					await interaction.update({ embeds: [resultsEmbed], components: [actionRow] });
 
 					return member.roles
-						.remove(config.tranquilizerRole)
+						.remove(scanner.tranquilizerRole)
 						.catch((err) => interaction.reply({ content: `Failed to remove role\nReason: ${err}` }));
 				case 'reject':
 					resultsEmbed.setThumbnail('https://cdn3.emoji.gg/emojis/4881-reddiscordshield.png');

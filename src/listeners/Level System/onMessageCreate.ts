@@ -2,8 +2,8 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener } from '@sapphire/framework';
 import { ChannelType, MessageType, type Message, EmbedBuilder } from 'discord.js';
 import { Duration } from '@sapphire/duration';
-import config from '../config.json';
-import levelManager from '../lib/levelManager';
+import { levels } from '../../../config.json';
+import levelManager from '../../lib/managers/levelManager';
 
 const cooldownMap = new Map<string, number>();
 
@@ -17,7 +17,7 @@ export class UserEvent extends Listener {
 			message.channel.type === ChannelType.DM ||
 			cooldownMap.has(message.author.id) ||
 			message.author.bot ||
-			config.IgnoreChannels.find((id) => id === message.channelId) ||
+			levels.IgnoreChannels.find((id) => id === message.channelId) ||
 			message.type !== MessageType.Default
 		)
 			return;
@@ -44,6 +44,6 @@ export class UserEvent extends Listener {
 		cooldownMap.set(message.author.id, Date.now());
 		setTimeout(() => {
 			cooldownMap.delete(message.author.id);
-		}, new Duration(config.messageCooldown).offset);
+		}, new Duration(levels.messageCooldown).offset);
 	}
 }
