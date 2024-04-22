@@ -4,9 +4,12 @@ cd ~/Discord-Bot
 
 # Pull the latest changes from the Git repository
 git pull
+pm2 stop vtr-bot
 
-# Install any new dependencies
-npm install
+# Install and build
+yarn add
+rm -rf dist
+yarn build
 
 # Restart the bot using pm2
-pm2 restart vtr-bot
+pm2 start vtr-bot
