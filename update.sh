@@ -7,7 +7,7 @@ git pull
 pm2 stop vtr-bot
 
 # Install and build
-yarn add
+yarn
 rm -rf dist
 yarn build
 
