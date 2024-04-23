@@ -46,10 +46,10 @@ export class UserCommand extends Subcommand {
 								.addChoices(...categories)
 						)
 						.addStringOption((option) => option.setName('reason').setDescription('Detailed reason for a strike').setRequired(true))
-						.addUserOption((option) => option.setName('victim').setDescription('Main affected member / Reported by...?'))
 						.addIntegerOption((option) =>
 							option.setName('strikes').setDescription('amount to strike').setRequired(true).setMinValue(1).setMaxValue(4)
 						)
+						.addUserOption((option) => option.setName('victim').setDescription('Main affected member / Reported by...?'))
 				)
 				.addSubcommand((command) =>
 					command
