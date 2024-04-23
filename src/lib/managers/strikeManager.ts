@@ -12,14 +12,22 @@ const emojis = {
 
 class strikesManagement {
 	async add(user: User, reason: string, count: number, moderator: User) {
+		container.logger.debug(`add function called with user: ${user}, reason: ${reason}, count: ${count}, moderator: ${moderator}`);
 		let strikeUser = await this.get(user.id);
 		container.logger.debug(`Got ${strikeUser}!`);
 
-		for (let i = 0; i < count; i++) {
-			const strike: IStrike = { reason, timestamp: new Date(), moderatorId: moderator.id, strikeId: uuidv4() };
+		try {
+			container.logger.debug(`Entering loop with count: ${count}`);
+			for (let i = 0; i < count; i++) {
+				container.logger.debug(`Loop iteration: ${i}`);
+				const strike: IStrike = { reason, timestamp: new Date(), moderatorId: moderator.id, strikeId: uuidv4() };
 
-			strikeUser.strikes.push(strike);
-			container.logger.debug(`Added strike ${strike.strikeId} to ${strikeUser.id}!`);
+				strikeUser.strikes.push(strike);
+				container.logger.debug(`Added strike ${strike.strikeId} to ${strikeUser.id}!`);
+			}
+			container.logger.debug(`Exited loop`);
+		} catch (error) {
+			container.logger.error(`Error in add function: ${error}`);
 		}
 
 		await strikeUser.save();
