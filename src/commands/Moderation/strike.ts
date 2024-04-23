@@ -93,8 +93,26 @@ export class UserCommand extends Subcommand {
 	}
 
 	public async strikeRemove(interaction: Subcommand.ChatInputCommandInteraction) {
-		// Your code here
+		const targetUser = interaction.options.getUser('target', true);
+		const strikeId = interaction.options.getString('uuid', true);
 
-		return interaction;
+		const strike = await strikeManager.remove(targetUser, strikeId);
+		if (!strike) {
+			return interaction.reply({ content: 'Could not find strike with user!', ephemeral: true });
+		}
+
+		const generateStandings = await strikeManager.generateStandings(targetUser);
+
+		const strikeSuccessEmbed = new EmbedBuilder()
+			.setAuthor({ name: '@' + interaction.user.username, iconURL: interaction.user.displayAvatarURL() })
+			.setColor('Green')
+			.setThumbnail('https://cdn3.emoji.gg/emojis/success.gif')
+			.setTitle(`Strike reverted!`)
+			.setDescription(`Strike with ID: ${strikeId} has been removed from ${targetUser.username}!\n\n${strike?.reason}`)
+			.setTimestamp();
+
+		await targetUser.send({ content: 'Strike removed!', embeds: [strikeSuccessEmbed, generateStandings] });
+
+		return interaction.reply({ content: 'Strike removed!', embeds: [strikeSuccessEmbed, generateStandings], ephemeral: true });
 	}
 }

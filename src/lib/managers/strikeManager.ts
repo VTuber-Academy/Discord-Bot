@@ -2,6 +2,8 @@ import { EmbedBuilder, User } from 'discord.js';
 import StrikeModel, { IStrike } from '../models/strikesDatabase';
 import { v4 as uuidv4 } from 'uuid';
 import { DateTime } from 'luxon';
+import { container } from '@sapphire/framework';
+import config from '../../../config.json';
 
 const emojis = {
 	positive: '<:heart:1232346608742436865> ',
@@ -20,6 +22,10 @@ class strikesManagement {
 
 		await strikeUser.save();
 
+		if (this.activeStrikes(strikeUser.strikes).length >= 4) {
+			await this.staffAlert(user);
+		}
+
 		return strikeUser;
 	}
 
@@ -32,11 +38,11 @@ class strikesManagement {
 			return undefined;
 		}
 
-		strikeUser.strikes.splice(strikeIndex, 1);
+		const removedStrike = strikeUser.strikes.splice(strikeIndex, 1);
 
 		await strikeUser.save();
 
-		return strikeUser;
+		return removedStrike[0];
 	}
 
 	async generateStandings(user: User) {
@@ -56,6 +62,24 @@ class strikesManagement {
 		if (activeStrikes.length > 0) {
 			const embedFields = activeStrikes.map((strike) => ({ name: strike.strikeId, value: strike.reason }));
 			embed.addFields(embedFields);
+		}
+
+		return embed;
+	}
+
+	async staffAlert(user: User) {
+		const embed = new EmbedBuilder()
+			.setTitle('User has reached 4 strikes!')
+			.setDescription(`User ${user.username} has reached 4 strikes!`)
+			.setThumbnail(user.displayAvatarURL())
+			.setColor('Red')
+			.setTimestamp();
+
+		const server = await container.client.guilds.fetch(config.mainServer);
+		const staffChannel = server.channels.cache.get(config.scanner.staffNotificationChannel);
+
+		if (staffChannel && staffChannel.isTextBased()) {
+			await staffChannel.send({ embeds: [embed] });
 		}
 
 		return embed;
