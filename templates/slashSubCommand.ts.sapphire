@@ -1,0 +1,20 @@
+{
+    "category": "commands"
+}
+---
+import { ApplyOptions } from '@sapphire/decorators';
+import { Subcommand } from '@sapphire/plugin-subcommands';
+
+@ApplyOptions<Subcommand.Options>({
+	description: 'A basic slash command',
+	subcommands: []
+})
+export class UserCommand extends Subcommand {
+	public override registerApplicationCommands(registry: Subcommand.Registry) {
+		registry.registerChatInputCommand((builder) =>
+			builder //
+				.setName(this.name)
+				.setDescription(this.description)
+		);
+	}
+}
