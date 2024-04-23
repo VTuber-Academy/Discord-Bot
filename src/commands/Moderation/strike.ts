@@ -68,6 +68,9 @@ export class UserCommand extends Subcommand {
 		const victim = interaction.options.getUser('victim');
 		const strikes = interaction.options.getInteger('strikes', true);
 
+		this.container.logger.debug(
+			`Creating ${strikes} strikes for ${targetUser.username} in ${category.name} for ${reason} by ${interaction.user.username}`
+		);
 		await strikeManager.add(targetUser, `${category.name} - ${reason}\n\nVictim: ${victim?.username ?? 'N/A'}`, strikes, interaction.user);
 
 		const strikeSuccessEmbed = new EmbedBuilder()

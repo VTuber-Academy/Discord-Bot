@@ -1,6 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Command } from '@sapphire/framework';
-import strikeManager from '../lib/managers/strikeManager';
+import strikeManager from '../../lib/managers/strikeManager';
 
 @ApplyOptions<Command.Options>({
 	description: "See a member's moral standings"
