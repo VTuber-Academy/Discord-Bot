@@ -62,15 +62,14 @@ export class UserCommand extends Subcommand {
 	}
 
 	public async strikeAdd(interaction: Subcommand.ChatInputCommandInteraction) {
+		await interaction.deferReply({ ephemeral: true });
+
 		const targetUser = interaction.options.getUser('target', true);
 		const category = categories[parseInt(interaction.options.getString('category', true))];
 		const reason = interaction.options.getString('reason', true);
 		const victim = interaction.options.getUser('victim');
 		const strikes = interaction.options.getInteger('strikes', true);
 
-		this.container.logger.debug(
-			`Creating ${strikes} strikes for ${targetUser.username} in ${category.name} for ${reason} by ${interaction.user.username}`
-		);
 		await strikeManager.add(targetUser, `${category.name} - ${reason}\n\nVictim: ${victim?.username ?? 'N/A'}`, strikes, interaction.user);
 
 		const strikeSuccessEmbed = new EmbedBuilder()
@@ -90,9 +89,9 @@ export class UserCommand extends Subcommand {
 		}
 
 		const standingsEmbed = await strikeManager.generateStandings(targetUser);
-		await targetUser.send({ content: 'You have been **striked**!', embeds: [standingsEmbed] });
+		await targetUser.send({ content: 'You have been **striked**!', embeds: [standingsEmbed] }).catch(() => 0);
 
-		return interaction.reply({ embeds: [strikeSuccessEmbed, standingsEmbed] });
+		return interaction.editReply({ embeds: [strikeSuccessEmbed, standingsEmbed] });
 	}
 
 	public async strikeRemove(interaction: Subcommand.ChatInputCommandInteraction) {
