@@ -63,7 +63,7 @@ class strikesManagement {
 		const moralPoints = 4 - activeStrikes.length;
 
 		const embed = new EmbedBuilder()
-			.setDescription(`${emojis.positive.repeat(moralPoints)}${emojis.negative.repeat(4 - moralPoints)}`)
+			.setDescription(`${emojis.positive.repeat(moralPoints > 0 ? moralPoints : 0)}${emojis.negative.repeat(4 - moralPoints)}`)
 			.setColor(moralPoints > 2 ? 'Green' : 'Red')
 			.setTitle('Moral Standings')
 			.setAuthor({ name: user.username, iconURL: user.displayAvatarURL() })
@@ -93,7 +93,7 @@ class strikesManagement {
 			await staffChannel.send({ embeds: [embed] });
 		}
 
-		return embed;
+		return;
 	}
 
 	activeStrikes(strikes: IStrike[]) {
