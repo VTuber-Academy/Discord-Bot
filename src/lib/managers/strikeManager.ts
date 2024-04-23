@@ -15,7 +15,7 @@ class strikesManagement {
 		let strikeUser = await this.get(user.id);
 		container.logger.debug(`Got ${strikeUser}!`);
 
-		for (let i = 0; i > count; i++) {
+		for (let i = 0; i < count; i++) {
 			const strike = { reason, timestamp: new Date(), moderatorId: moderator.id, strikeId: uuidv4() };
 
 			strikeUser.strikes.push(strike);
