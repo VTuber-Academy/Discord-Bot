@@ -13,14 +13,17 @@ const emojis = {
 class strikesManagement {
 	async add(user: User, reason: string, count: number, moderator: User) {
 		let strikeUser = await this.get(user.id);
+		container.logger.debug(`Got ${strikeManager}!`);
 
 		for (let i = 0; i < count; i++) {
 			const strike = { reason, timestamp: new Date(), moderatorId: moderator.id, strikeId: uuidv4() };
 
 			strikeUser.strikes.push(strike);
+			container.logger.debug(`Added strike ${strike.strikeId} to ${strikeUser.id}!`);
 		}
 
 		await strikeUser.save();
+		container.logger.debug(`Saved ${strikeUser}!`);
 
 		if (this.activeStrikes(strikeUser.strikes).length >= 4) {
 			await this.staffAlert(user);
