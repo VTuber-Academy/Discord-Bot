@@ -73,8 +73,10 @@ class strikesManagement {
 			.setTimestamp();
 
 		if (activeStrikes.length > 0) {
-			const embedFields = activeStrikes.map((strike) => ({ name: `ID: \`${strike.strikeId}\``, value: strike.reason, inline: true }));
+			const embedFields = activeStrikes.map((strike) => ({ name: `ID: \`${strike.strikeId}\``, value: strike.reason, inline: false }));
 			embed.addFields(embedFields);
+		} else {
+			embed.setDescription('No active strikes! Great Job! <:ColaLove:860148150936797184>');
 		}
 
 		return embed;
