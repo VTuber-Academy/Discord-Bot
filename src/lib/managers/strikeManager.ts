@@ -1,4 +1,4 @@
-import { EmbedBuilder, User } from 'discord.js';
+import { ColorResolvable, EmbedBuilder, User } from 'discord.js';
 import StrikeModel, { IStrike } from '../models/strikesDatabase';
 import { v4 as uuidv4 } from 'uuid';
 import { DateTime } from 'luxon';
@@ -8,6 +8,14 @@ import config from '../../../config.json';
 const emojis = {
 	positive: '<:heart:1232346608742436865> ',
 	negative: '<a:break:1232346606851063929> '
+};
+
+const strikeColors: Record<number, ColorResolvable> = {
+	4: '#5861bb',
+	3: '#4e41a2',
+	2: '#2c1668',
+	1: '#180f29',
+	0: '#000000'
 };
 
 class strikesManagement {
@@ -60,18 +68,18 @@ class strikesManagement {
 		const strikeUser = await this.get(user.id);
 
 		const activeStrikes = this.activeStrikes(strikeUser.strikes);
-		const moralPoints = 4 - activeStrikes.length;
+		const moralPoints = 4 - activeStrikes.length > 0 ? 4 - activeStrikes.length : 0;
 
 		const embed = new EmbedBuilder()
-			.setDescription(`${emojis.positive.repeat(moralPoints > 0 ? moralPoints : 0)}${emojis.negative.repeat(4 - moralPoints)}`)
-			.setColor(moralPoints > 2 ? 'Green' : 'Red')
-			.setTitle('Moral Standings')
-			.setAuthor({ name: user.username, iconURL: user.displayAvatarURL() })
+			.setDescription(`Moral Points`)
+			.setColor(strikeColors[moralPoints])
+			.setTitle(`${emojis.positive.repeat(moralPoints)}${emojis.negative.repeat(4 - moralPoints)}`)
+			.setAuthor({ name: 'Moral Standings', iconURL: container.client.user?.displayAvatarURL() })
 			.setThumbnail(user.displayAvatarURL())
 			.setTimestamp();
 
 		if (activeStrikes.length > 0) {
-			const embedFields = activeStrikes.map((strike) => ({ name: strike.strikeId, value: strike.reason }));
+			const embedFields = activeStrikes.map((strike) => ({ name: `ID: \`${strike.strikeId}\``, value: strike.reason }));
 			embed.addFields(embedFields);
 		}
 
