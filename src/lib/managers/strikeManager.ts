@@ -1,4 +1,4 @@
-import { ColorResolvable, EmbedBuilder, User } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ColorResolvable, EmbedBuilder, MessageActionRowComponentBuilder, User } from 'discord.js';
 import StrikeModel, { IStrike } from '../models/strikesDatabase';
 import { v4 as uuidv4 } from 'uuid';
 import { DateTime } from 'luxon';
@@ -22,18 +22,13 @@ class strikesManagement {
 	async add(user: User, reason: string, count: number, moderator: User) {
 		container.logger.debug(`add function called with user: ${user}, reason: ${reason}, count: ${count}, moderator: ${moderator}`);
 		let strikeUser = await this.get(user.id);
-		container.logger.debug(`Got ${strikeUser}!`);
 
 		try {
-			container.logger.debug(`Entering loop with count: ${count}`);
 			for (let i = 0; i < count; i++) {
-				container.logger.debug(`Loop iteration: ${i}`);
 				const strike: IStrike = { reason, timestamp: new Date(), moderatorId: moderator.id, strikeId: uuidv4() };
 
 				strikeUser.strikes.push(strike);
-				container.logger.debug(`Added strike ${strike.strikeId} to ${strikeUser.id}!`);
 			}
-			container.logger.debug(`Exited loop`);
 		} catch (error) {
 			container.logger.error(`Error in add function: ${error}`);
 		}
@@ -71,7 +66,6 @@ class strikesManagement {
 		const moralPoints = 4 - activeStrikes.length > 0 ? 4 - activeStrikes.length : 0;
 
 		const embed = new EmbedBuilder()
-			.setDescription(`Moral Points`)
 			.setColor(strikeColors[moralPoints])
 			.setTitle(`${emojis.positive.repeat(moralPoints)}${emojis.negative.repeat(4 - moralPoints)}`)
 			.setAuthor({ name: 'Moral Standings', iconURL: container.client.user?.displayAvatarURL() })
@@ -79,7 +73,7 @@ class strikesManagement {
 			.setTimestamp();
 
 		if (activeStrikes.length > 0) {
-			const embedFields = activeStrikes.map((strike) => ({ name: `ID: \`${strike.strikeId}\``, value: strike.reason }));
+			const embedFields = activeStrikes.map((strike) => ({ name: `ID: \`${strike.strikeId}\``, value: strike.reason, inline: true }));
 			embed.addFields(embedFields);
 		}
 
@@ -97,8 +91,12 @@ class strikesManagement {
 		const server = await container.client.guilds.fetch(config.mainServer);
 		const staffChannel = server.channels.cache.get(config.scanner.staffNotificationChannel);
 
+		const messageRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+			new ButtonBuilder().setCustomId(`strike:ban:${user.id}`).setLabel('Ban User').setStyle(ButtonStyle.Danger).setEmoji('🔨')
+		);
+
 		if (staffChannel && staffChannel.isTextBased()) {
-			await staffChannel.send({ embeds: [embed] });
+			await staffChannel.send({ embeds: [embed], components: [messageRow] });
 		}
 
 		return;
