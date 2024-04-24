@@ -1,6 +1,6 @@
 {
 	"name": "vtr-bot",
-	"version": "1.0.9",
+	"version": "1.0.10",
 	"main": "dist/index.js",
 	"author": "@miekohikari",
 	"license": "MIT",
@@ -22,6 +22,7 @@
 		"dotenv": "^16.4.5",
 		"luxon": "^3.4.4",
 		"mongoose": "^8.3.2",
+		"typescript-cp": "^0.1.9",
 		"uuid": "^9.0.1"
 	},
 	"devDependencies": {
@@ -46,7 +47,7 @@
 	"scripts": {
 		"sapphire": "sapphire",
 		"generate": "sapphire generate",
-		"build": "tsc",
+		"build": "tsc && tscp",
 		"watch": "tsc -w",
 		"start": "node dist/index.js",
 		"dev": "npm run build && npm run start",
