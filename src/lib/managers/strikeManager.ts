@@ -23,9 +23,11 @@ class strikesManagement {
 		container.logger.debug(`add function called with user: ${user}, reason: ${reason}, count: ${count}, moderator: ${moderator}`);
 		let strikeUser = await this.get(user.id);
 
+		const strikeID = uuidv4();
+
 		try {
 			for (let i = 0; i < count; i++) {
-				const strike: IStrike = { reason, timestamp: new Date(), moderatorId: moderator.id, strikeId: uuidv4() };
+				const strike: IStrike = { reason, timestamp: new Date(), moderatorId: moderator.id, strikeId: strikeID };
 
 				strikeUser.strikes.push(strike);
 			}
@@ -51,28 +53,29 @@ class strikesManagement {
 		return strikeUser;
 	}
 
+	// TODO: Remove tranquilizer role incase of recovery from the 4th strike.
 	async remove(user: User, strikeId: string) {
 		const strikeUser = await this.get(user.id);
 
-		const strikeIndex = strikeUser.strikes.findIndex((strike) => strike.strikeId === strikeId);
+		const removedStrikes = strikeUser.strikes.filter((strike) => strike.strikeId === strikeId);
 
-		if (strikeIndex === -1) {
+		if (removedStrikes.length === 0) {
 			return undefined;
 		}
 
-		const removedStrike = strikeUser.strikes.splice(strikeIndex, 1);
+		strikeUser.strikes = strikeUser.strikes.filter((strike) => strike.strikeId !== strikeId);
 
 		await strikeUser.save();
 
 		this.log(
 			new EmbedBuilder()
-				.setTitle('Strike Removed')
-				.setDescription(`User: ${user.username}'s strike with ID: ${strikeId} has been removed!`)
+				.setTitle('Strike(s) Removed')
+				.setDescription(`User: ${user.username}'s strike(s) with ID: ${strikeId} have been removed!`)
 				.setColor('Green')
 				.setTimestamp()
 		);
 
-		return removedStrike[0];
+		return removedStrikes;
 	}
 
 	async generateStandings(user: User) {
@@ -112,6 +115,11 @@ class strikesManagement {
 		const messageRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 			new ButtonBuilder().setCustomId(`strike:ban:${user.id}`).setLabel('Ban User').setStyle(ButtonStyle.Danger).setEmoji('🔨')
 		);
+
+		const member = await server.members.fetch(user);
+
+		if (!member) return;
+		await member.roles.add(config.scanner.tranquilizerRole, 'User has reached 4 strikes!');
 
 		if (staffChannel && staffChannel.isTextBased()) {
 			await staffChannel.send({ embeds: [embed], components: [messageRow] });

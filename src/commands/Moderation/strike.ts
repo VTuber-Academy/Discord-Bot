@@ -1,6 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Subcommand } from '@sapphire/plugin-subcommands';
-import { EmbedBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageActionRowComponentBuilder } from 'discord.js';
 import strikeManager from '../../lib/managers/strikeManager';
 
 const categories = [
@@ -70,7 +70,12 @@ export class UserCommand extends Subcommand {
 		const victim = interaction.options.getUser('victim');
 		const strikes = interaction.options.getInteger('strikes', true);
 
-		await strikeManager.add(targetUser, `${category.name} - ${reason}\n\nVictim: ${victim?.username ?? 'N/A'}`, strikes, interaction.user);
+		const strikeUser = await strikeManager.add(
+			targetUser,
+			`${category.name} - ${reason}\n\nVictim: ${victim?.username ?? 'N/A'}`,
+			strikes,
+			interaction.user
+		);
 
 		const strikeSuccessEmbed = new EmbedBuilder()
 			.setAuthor({ name: '@' + interaction.user.username, iconURL: interaction.user.displayAvatarURL() })
@@ -89,7 +94,15 @@ export class UserCommand extends Subcommand {
 		}
 
 		const standingsEmbed = await strikeManager.generateStandings(targetUser);
-		await targetUser.send({ content: 'You have been **striked**!', embeds: [standingsEmbed] }).catch(() => 0);
+
+		const appealRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId(`strike:appeal:${targetUser.id}:${strikeUser.strikes[strikeUser.strikes.length - 1].strikeId}`)
+				.setEmoji('🔨')
+				.setStyle(ButtonStyle.Primary)
+				.setLabel('Appeal')
+		);
+		await targetUser.send({ content: 'You have been **striked**!', embeds: [standingsEmbed], components: [appealRow] }).catch(() => 0);
 
 		return interaction.editReply({ embeds: [strikeSuccessEmbed, standingsEmbed] });
 	}

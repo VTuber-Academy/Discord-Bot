@@ -1,6 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener } from '@sapphire/framework';
-import { Interaction } from 'discord.js';
+import { ActionRowBuilder, Interaction, ModalActionRowComponentBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from 'discord.js';
 import strikeManager from '../../../lib/managers/strikeManager';
 
 @ApplyOptions<Listener.Options>({
@@ -29,6 +29,30 @@ export class UserEvent extends Listener {
 				});
 
 				return interaction.message.edit({ content: 'User has been banned', components: [] });
+			} else if (subcommand === 'appeal') {
+				const row1 = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+					new TextInputBuilder()
+						.setCustomId('strike-id')
+						.setLabel('Strike ID (DO NOT CHANGE)')
+						.setPlaceholder('Bruh I told you to not change, cancel and click the button again')
+						.setValue(args[1])
+						.setStyle(TextInputStyle.Short)
+						.setRequired(true)
+				);
+
+				const row2 = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+					new TextInputBuilder()
+						.setCustomId('reason')
+						.setLabel('Reason to appeal')
+						.setPlaceholder('Be descriptive')
+						.setMaxLength(4096)
+						.setRequired(true)
+						.setStyle(TextInputStyle.Paragraph)
+				);
+
+				const Modal = new ModalBuilder().addComponents(row1, row2).setCustomId(`strike:appeal:${args[0]}`).setTitle('Strike Appeal');
+
+				return interaction.showModal(Modal);
 			}
 		}
 
