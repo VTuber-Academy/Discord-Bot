@@ -40,6 +40,14 @@ class strikesManagement {
 			await this.staffAlert(user);
 		}
 
+		this.log(
+			new EmbedBuilder()
+				.setTitle('Strike Added')
+				.setDescription(`User: ${user.username} has been given ${count} strike(s) by ${moderator.username} for: ${reason}`)
+				.setColor('Red')
+				.setTimestamp()
+		);
+
 		return strikeUser;
 	}
 
@@ -55,6 +63,14 @@ class strikesManagement {
 		const removedStrike = strikeUser.strikes.splice(strikeIndex, 1);
 
 		await strikeUser.save();
+
+		this.log(
+			new EmbedBuilder()
+				.setTitle('Strike Removed')
+				.setDescription(`User: ${user.username}'s strike with ID: ${strikeId} has been removed!`)
+				.setColor('Green')
+				.setTimestamp()
+		);
 
 		return removedStrike[0];
 	}
@@ -120,6 +136,15 @@ class strikesManagement {
 		}
 
 		return strikeUser;
+	}
+
+	async log(embed: EmbedBuilder) {
+		const server = await container.client.guilds.fetch(config.mainServer);
+		const logChannel = server.channels.cache.get(config.strike.logChannel);
+
+		if (logChannel && logChannel.isTextBased()) {
+			await logChannel.send({ embeds: [embed] });
+		}
 	}
 }
 
