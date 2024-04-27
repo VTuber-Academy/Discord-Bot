@@ -1,6 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener } from '@sapphire/framework';
-import { EmbedBuilder, Interaction } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Interaction, MessageActionRowComponentBuilder } from 'discord.js';
 import strikeManager from '../../../lib/managers/strikeManager';
 import config from '../../../../config.json';
 
@@ -21,7 +21,7 @@ export class UserEvent extends Listener {
 			const strikeId = interaction.fields.getTextInputValue('strike-id');
 			const reason = interaction.fields.getTextInputValue('reason');
 
-			const strikeUser = await strikeManager.get(strikeId);
+			const strikeUser = await strikeManager.get(args[0]);
 			const strike = strikeUser.strikes.filter((s) => s.strikeId === strikeId);
 
 			if (strike.length === 0) return interaction.reply({ content: 'Strike not found' });
@@ -50,11 +50,24 @@ export class UserEvent extends Listener {
 					.setTimestamp()
 			);
 
-			// TODO: Add a button to accept or reject the appeal
+			const appealRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+				new ButtonBuilder()
+					.setCustomId(`strike:appeal:accept:${args[0]}:${strikeId}`)
+					.setLabel('Accept')
+					.setStyle(ButtonStyle.Success)
+					.setEmoji('✅'),
+				new ButtonBuilder()
+					.setCustomId(`strike:appeal:reject:${args[0]}:${strikeId}`)
+					.setLabel('Reject')
+					.setStyle(ButtonStyle.Danger)
+					.setEmoji('⚠️')
+			);
 
-			await channel.send({ embeds });
+			await channel.send({ embeds, components: [appealRow] });
 			await interaction.deferUpdate();
 			return interaction.message?.edit({ content: 'Appeal submitted', embeds });
 		}
+
+		return;
 	}
 }

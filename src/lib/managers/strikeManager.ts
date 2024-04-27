@@ -148,7 +148,7 @@ class strikesManagement {
 
 	async log(embed: EmbedBuilder) {
 		const server = await container.client.guilds.fetch(config.mainServer);
-		const logChannel = server.channels.cache.get(config.strike.logChannel);
+		const logChannel = await server.channels.fetch(config.strike.logChannel);
 
 		if (logChannel && logChannel.isTextBased()) {
 			await logChannel.send({ embeds: [embed] });

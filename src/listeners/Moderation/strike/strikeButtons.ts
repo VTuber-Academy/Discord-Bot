@@ -30,6 +30,8 @@ export class UserEvent extends Listener {
 
 				return interaction.message.edit({ content: 'User has been banned', components: [] });
 			} else if (subcommand === 'appeal') {
+				// TODO: Check if the user changed Strike ID or not.
+
 				const row1 = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 					new TextInputBuilder()
 						.setCustomId('strike-id')
