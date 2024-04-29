@@ -56,7 +56,7 @@ export class UserEvent extends Listener {
 					.setCustomId('reason')
 					.setLabel('Reason to appeal')
 					.setPlaceholder('Be descriptive')
-					.setMaxLength(4096)
+					.setMaxLength(4000)
 					.setRequired(true)
 					.setStyle(TextInputStyle.Paragraph)
 			);

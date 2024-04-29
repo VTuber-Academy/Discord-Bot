@@ -1,6 +1,6 @@
 {
 	"name": "vtr-bot",
-	"version": "1.0.15",
+	"version": "1.0.16",
 	"main": "dist/index.js",
 	"author": "@miekohikari",
 	"license": "MIT",
