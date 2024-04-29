@@ -52,12 +52,12 @@ export class UserEvent extends Listener {
 
 			const appealRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
 				new ButtonBuilder()
-					.setCustomId(`strike:appeal:accept:${args[0]}:${strikeId}`)
+					.setCustomId(`strike:verdict:accept:${args[0]}:${strikeId}`)
 					.setLabel('Accept')
 					.setStyle(ButtonStyle.Success)
 					.setEmoji('✅'),
 				new ButtonBuilder()
-					.setCustomId(`strike:appeal:reject:${args[0]}:${strikeId}`)
+					.setCustomId(`strike:verdict:reject:${args[0]}:${strikeId}`)
 					.setLabel('Reject')
 					.setStyle(ButtonStyle.Danger)
 					.setEmoji('⚠️')

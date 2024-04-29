@@ -123,7 +123,9 @@ export class UserCommand extends Subcommand {
 			.setColor('Green')
 			.setThumbnail('https://cdn3.emoji.gg/emojis/success.gif')
 			.setTitle(`Strike reverted!`)
-			.setDescription(`Strike with ID: ${strikeId} has been removed from ${targetUser.username}!\n\n${strike?.reason}`)
+			.setDescription(
+				`${strike.length} strike(s) with ID: \`${strikeId}\` has been removed from ${targetUser.username}!\n\n${strike[0].reason}`
+			)
 			.setTimestamp();
 
 		await targetUser.send({ content: 'Strike removed!', embeds: [strikeSuccessEmbed, generateStandings] });
