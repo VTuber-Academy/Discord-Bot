@@ -14,7 +14,6 @@ import { createReadStream } from 'fs';
 import path from 'path';
 import csvParser from 'csv-parser';
 import { DateTime } from 'luxon';
-import axios from 'axios';
 
 interface ScreeningResults {
 	isFlagged: boolean;
@@ -115,37 +114,6 @@ export class UserEvent extends Listener {
 			}
 
 			member.client.logger.debug(`[Sentry] matched ${displayNameMatcher} in ${member.user.displayName}`);
-
-			let nsfwProfileAPIoptions = {
-				method: 'POST',
-				url: 'https://api.edenai.run/v2/image/explicit_content',
-				headers: {
-					Authorization: `Bearer ${process.env.EdenAI}`
-				},
-				data: {
-					show_original_response: false,
-					fallback_providers: '',
-					providers: 'api4ai',
-					file_url: member.user.displayAvatarURL({ extension: 'png', size: 128 })
-				}
-			};
-
-			await axios.request(nsfwProfileAPIoptions).then(
-				(response) => {
-					staffEmbed.addFields([{ name: 'profile picture NSFW Likelihood:', value: `${response.data['eden-ai'].nsfw_likelihood} / 5` }]);
-					if (response.data['eden-ai'].nsfw_likelihood === 5) {
-						screeningResults.isFlagged = true;
-					} else if (response.data['eden-ai'].nsfw_likelihood > 3) {
-						screeningResults.redFlags.push(
-							`❗ Eden detects suggestive profile picture\n- NSFW Likelihood: ${response.data['eden-ai'].nsfw_likelihood} / 5`
-						);
-					}
-				},
-				(error) => {
-					staffChannel.send(`Cannot scan ${member}'s pfp with AI`);
-					console.log(error);
-				}
-			);
 
 			if (!screeningResults.isFlagged && screeningResults.redFlags.length >= 2) {
 				screeningResults.isFlagged = true;
